@@ -1,0 +1,270 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:service_app/helper/appointment_service.dart';
+import 'package:service_app/models/appointment_model.dart';
+import 'package:service_app/models/user_model.dart';
+import 'package:service_app/widgets/custom_register_button.dart';
+import 'package:service_app/widgets/selected_time_booking_appointment_contaiener.dart';
+import 'package:service_app/widgets/time_booking_appointment_container.dart';
+import 'package:service_app/widgets/doctor_widgets/doctor_profile_card_widget.dart';
+import 'package:service_app/widgets/horizontal_date_selector.dart';
+
+class BookAppointmentPage extends StatefulWidget {
+  BookAppointmentPage({super.key, required this.doctor});
+  final UserModel doctor;
+
+  @override
+  State<BookAppointmentPage> createState() => _BookAppointmentPageState();
+}
+
+class _BookAppointmentPageState extends State<BookAppointmentPage> {
+  final AppointmentService _appointmentService = AppointmentService();
+  DateTime selectedDate = DateTime.now();
+  bool isLoading = true;
+  UserModel? user;
+  Map<String, dynamic>? selectedSlot;
+  int? selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    getTasks();
+  }
+
+  void getTasks() async {
+    var userId = widget.doctor.uid;
+    if (userId == null) return;
+
+    var doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (doc.exists) {
+      user = UserModel.fromMap(doc.data()!);
+      await _appointmentService.syncWeeklyToDaily(
+          doctorId: userId, weeklySchedule: user!.doctorModel!.weeklySchedule);
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void _showDeleteDialog(BuildContext context, Map<String, dynamic> slot, String dateId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Appointment'),
+          content: Text('Are you sure you want to delete this slot?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _appointmentService.deleteSlot(
+                    doctorId: widget.doctor.uid,
+                    dateId: dateId,
+                    slotTime: (slot['time'] as Timestamp).toDate());
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> bookAppoinment() async {
+    if (selectedSlot == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('please select a time slot first!')));
+      return;
+    }
+if (selectedSlot!['status'] == 'booked') {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This slot is no longer available.')));
+    return;
+  }
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      var patientId = FirebaseAuth.instance.currentUser!.uid;
+      String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
+      
+      DateTime appointmentTime = (selectedSlot!['time'] as Timestamp).toDate();
+
+      AppointmentModel newAppointment = AppointmentModel(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          doctorName: widget.doctor.name,
+          time: appointmentTime,
+          date: selectedDate,
+          status: 'booked',
+          isMorning:selectedSlot!['isMorning']??true ,
+          patientId: patientId);
+
+      await FirebaseFirestore.instance.collection('users').doc(patientId).update({
+        'appointmentList': FieldValue.arrayUnion([newAppointment.toMap()])
+      });
+
+      DocumentReference dayRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.doctor.uid)
+          .collection('daily_slots')
+          .doc(dateId);
+
+      var dayDoc = await dayRef.get();
+      if (dayDoc.exists) {
+        List<dynamic> slots = List.from(dayDoc.get('slots'));
+        for (var i = 0; i < slots.length; i++) {
+          if (slots[i]['time'] == selectedSlot!['time']) {
+            slots[i]['status'] = 'booked';
+            slots[i]['patientId'] = patientId;
+            break;
+          }
+        }
+        await dayRef.update({'slots': slots});
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('appointment is added to your list successfully')));
+    } catch (e) {
+      print('Error when adding the appointment: $e');
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Book Appointment',
+          style: TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: SingleChildScrollView( // أضفنا هذا لضمان عدم حدوث Overflow عند كثرة العناصر
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DoctorProfileCardWidget(doctor: widget.doctor),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 60,
+                child: HorizontalDateSelector(
+                  onDataSelected: (date) {
+                    setState(() {
+                      selectedDate = date;
+                      selectedSlot = null; // إعادة تعيين الاختيار عند تغيير التاريخ
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Available Slots',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.doctor.uid)
+                    .collection('daily_slots')
+                    .doc(dateId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) return const Text('Something went wrong');
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return const Center(child: Text('No slots available for this day'));
+                  }
+
+                  var data = snapshot.data!.data() as Map<String, dynamic>;
+                  List<dynamic> slots = data['slots'] ?? [];
+List<dynamic> morningSlots = slots.where((s) => s['isMorning'] == true).toList();
+    List<dynamic> eveningSlots = slots.where((s) => s['isMorning'] == false).toList();
+                  if (slots.isEmpty) return const Center(child: Text('No slots available'));
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: slots.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 2.2,
+                    ),
+                    itemBuilder: (context, index) {
+  var slot = slots[index];
+  
+String currentStatus = slot['status'] ?? 'available';
+  
+  bool isSelected = selectedSlot != null && 
+      selectedSlot!['time'] == slot['time'];
+
+  String formattedTime = DateFormat('hh:mm').format((slot['time'] as Timestamp).toDate());
+
+ return GestureDetector(
+    // لا يسمح بالمسح أو الضغط إلا إذا كانت الحالة 'available'
+    onLongPress: currentStatus == 'available' 
+        ? () => _showDeleteDialog(context, slot, dateId) 
+        : null,
+    onTap: currentStatus == 'available' 
+        ? () {
+            setState(() {
+              selectedSlot = slot;
+            });
+          } 
+        : null,
+    
+    child: isSelected 
+        ? SelectedTimeBookingAppointmentContaiener(
+            time: formattedTime, 
+            isSelected: true, 
+            isMorning: slot['isMorning'],
+          )
+        : TimeBookingAppointmentContainer(
+            time: formattedTime, 
+            isSelected: false, 
+            isMorning: slot['isMorning'],
+            status: currentStatus, // نمرر الـ status النصي هنا
+          ),
+  );
+},
+                  );
+                },
+              ),
+              const SizedBox(height: 50),
+              Center(
+                child: CustomRegisterButton(
+                  width: 300,
+                  buttonName: 'CONFIRM BOOKING',
+                  onTap: bookAppoinment,
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

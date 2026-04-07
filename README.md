@@ -18,6 +18,7 @@ InstaDoctor is a comprehensive doctor appointment booking application built with
 - **Appointment Dashboard:** A home screen displaying key statistics for the day: total booked, completed, and cancelled appointments.
 - **Appointment Tracking:** View lists of upcoming, completed, and cancelled appointments for the current day.
 - **Status Updates:** Manage the lifecycle of an appointment by marking it as 'completed' or 'cancelled', which updates the availability in real-time.
+![Animation](https://github.com/user-attachments/assets/ec9be9a1-ef27-40c4-a7ca-6454ef99bc91)
 
 ## Tech Stack
 

@@ -2,14 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:service_app/helper/appointment_service.dart';
+import 'package:service_app/const/constant.dart';
+import 'package:service_app/services/appointment_service.dart';
 import 'package:service_app/models/appointment_model.dart';
 import 'package:service_app/models/user_model.dart';
+import 'package:service_app/services/user_appointment_services.dart';
 import 'package:service_app/widgets/custom_register_button.dart';
 import 'package:service_app/widgets/selected_time_booking_appointment_contaiener.dart';
 import 'package:service_app/widgets/time_booking_appointment_container.dart';
 import 'package:service_app/widgets/doctor_widgets/doctor_profile_card_widget.dart';
 import 'package:service_app/widgets/horizontal_date_selector.dart';
+import 'package:service_app/widgets/user_appointment_slot.dart';
 
 class BookAppointmentPage extends StatefulWidget {
   BookAppointmentPage({super.key, required this.doctor});
@@ -21,6 +24,7 @@ class BookAppointmentPage extends StatefulWidget {
 
 class _BookAppointmentPageState extends State<BookAppointmentPage> {
   final AppointmentService _appointmentService = AppointmentService();
+  final UserAppointmentService _userAppointmentService=UserAppointmentService();
   DateTime selectedDate = DateTime.now();
   bool isLoading = true;
   UserModel? user;
@@ -30,10 +34,10 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
   @override
   void initState() {
     super.initState();
-    getTasks();
+    getAppointments();
   }
 
-  void getTasks() async {
+  void getAppointments() async {
     var userId = widget.doctor.uid;
     if (userId == null) return;
 
@@ -76,69 +80,118 @@ class _BookAppointmentPageState extends State<BookAppointmentPage> {
       },
     );
   }
-
-  Future<void> bookAppoinment() async {
-    if (selectedSlot == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('please select a time slot first!')));
-      return;
-    }
-if (selectedSlot!['status'] == 'booked') {
+Future<void> bookAppoinment() async {
+  if (selectedSlot == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('please select a time slot first!')));
+    return;
+  }
+  
+  if (selectedSlot!['status'] == 'booked') {
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('This slot is no longer available.')));
     return;
   }
-    setState(() {
-      isLoading = true;
-    });
 
-    try {
-      var patientId = FirebaseAuth.instance.currentUser!.uid;
-      String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
-      
-      DateTime appointmentTime = (selectedSlot!['time'] as Timestamp).toDate();
+  setState(() => isLoading = true);
 
-      AppointmentModel newAppointment = AppointmentModel(
-          id: DateTime.now().microsecondsSinceEpoch.toString(),
-          doctorName: widget.doctor.name,
-          time: appointmentTime,
-          date: selectedDate,
-          status: 'booked',
-          isMorning:selectedSlot!['isMorning']??true ,
-          patientId: patientId);
+  try {
+    var patientId = FirebaseAuth.instance.currentUser!.uid;
+    String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
+    
+    AppointmentModel newAppointment = AppointmentModel(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        doctorName: widget.doctor.name,
+        time: (selectedSlot!['time'] as Timestamp).toDate(),
+        date: selectedDate,
+        status: 'booked',
+        isMorning: selectedSlot!['isMorning'] ?? true,
+        patientId: patientId);
 
-      await FirebaseFirestore.instance.collection('users').doc(patientId).update({
-        'appointmentList': FieldValue.arrayUnion([newAppointment.toMap()])
-      });
+    // --- MISSING PART 1: Call the Service ---
+    await _userAppointmentService.bookAppointment(
+      patientId: patientId,
+      doctorId: widget.doctor.uid!,
+      dateId: dateId,
+      appointment: newAppointment,
+      selectedSlot: selectedSlot!,
+    );
 
-      DocumentReference dayRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.doctor.uid)
-          .collection('daily_slots')
-          .doc(dateId);
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Appointment booked successfully!')));
+    
+    // Optional: Reset selection after booking
+    setState(() => selectedSlot = null);
 
-      var dayDoc = await dayRef.get();
-      if (dayDoc.exists) {
-        List<dynamic> slots = List.from(dayDoc.get('slots'));
-        for (var i = 0; i < slots.length; i++) {
-          if (slots[i]['time'] == selectedSlot!['time']) {
-            slots[i]['status'] = 'booked';
-            slots[i]['patientId'] = patientId;
-            break;
-          }
-        }
-        await dayRef.update({'slots': slots});
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('appointment is added to your list successfully')));
-    } catch (e) {
-      print('Error when adding the appointment: $e');
-    }
-    setState(() {
-      isLoading = false;
-    });
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Booking failed: $e')));
+  } finally {
+    setState(() => isLoading = false);
   }
+}
+//   Future<void> bookAppoinment() async {
+//     if (selectedSlot == null) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//           const SnackBar(content: Text('please select a time slot first!')));
+//       return;
+//     }
+// if (selectedSlot!['status'] == 'booked') {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('This slot is no longer available.')));
+//     return;
+//   }
+//     setState(() {
+//       isLoading = true;
+//     });
+
+//     try {
+//       var patientId = FirebaseAuth.instance.currentUser!.uid;
+//       String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
+      
+//       DateTime appointmentTime = (selectedSlot!['time'] as Timestamp).toDate();
+
+//       AppointmentModel newAppointment = AppointmentModel(
+//           id: DateTime.now().microsecondsSinceEpoch.toString(),
+//           doctorName: widget.doctor.name,
+//           time: appointmentTime,
+//           date: selectedDate,
+//           status: 'booked',
+//           isMorning:selectedSlot!['isMorning']??true ,
+//           patientId: patientId);
+
+//       await FirebaseFirestore.instance.collection('users').doc(patientId).update({
+//         'appointmentList': FieldValue.arrayUnion([newAppointment.toMap()])
+//       });
+
+//       DocumentReference dayRef = FirebaseFirestore.instance
+//           .collection('users')
+//           .doc(widget.doctor.uid)
+//           .collection('daily_slots')
+//           .doc(dateId);
+
+//       var dayDoc = await dayRef.get();
+//       if (dayDoc.exists) {
+//         List<dynamic> slots = List.from(dayDoc.get('slots'));
+//         for (var i = 0; i < slots.length; i++) {
+//           if (slots[i]['time'] == selectedSlot!['time']) {
+//             slots[i]['status'] = 'booked';
+//             slots[i]['patientId'] = patientId;
+//             break;
+//           }
+//         }
+//         await dayRef.update({'slots': slots});
+//       }
+
+//       ScaffoldMessenger.of(context).showSnackBar(
+//           const SnackBar(content: Text('appointment is added to your list successfully')));
+//     } catch (e) {
+//       print('Error when adding the appointment: $e');
+//     }
+//     setState(() {
+//       isLoading = false;
+//     });
+//   }
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +202,9 @@ if (selectedSlot!['status'] == 'booked') {
     String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
+        backgroundColor: backgroundColor,
         title: const Text(
           'Book Appointment',
           style: TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.bold),
@@ -181,23 +236,39 @@ if (selectedSlot!['status'] == 'booked') {
               ),
               const SizedBox(height: 20),
               StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(widget.doctor.uid)
-                    .collection('daily_slots')
-                    .doc(dateId)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) return const Text('Something went wrong');
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return const Center(child: Text('No slots available for this day'));
-                  }
 
-                  var data = snapshot.data!.data() as Map<String, dynamic>;
-                  List<dynamic> slots = data['slots'] ?? [];
+              stream: _userAppointmentService.getDailySlotsStream(widget.doctor.uid!, dateId),
+  builder: (context, snapshot) {
+    if (snapshot.hasError) return const Text('Something went wrong');
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (!snapshot.hasData || !snapshot.data!.exists) {
+      return const Center(child: Text('No slots available for this day'));
+    }
+
+    var data = snapshot.data!.data() as Map<String, dynamic>;
+    // The rest of your UI logic (slots.where, GridView.builder) remains the same
+    List<dynamic> slots = data['slots'] ?? [];
+              // StreamBuilder<DocumentSnapshot>(
+              //   stream: FirebaseFirestore.instance
+              //       .collection('users')
+              //       .doc(widget.doctor.uid)
+              //       .collection('daily_slots')
+              //       .doc(dateId)
+              //       .snapshots(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasError) return const Text('Something went wrong');
+              //     if (snapshot.connectionState == ConnectionState.waiting) {
+              //       return const Center(child: CircularProgressIndicator());
+              //     }
+              //     if (!snapshot.hasData || !snapshot.data!.exists) {
+              //       return const Center(child: Text('No slots available for this day'));
+              //     }
+
+              //     var data = snapshot.data!.data() as Map<String, dynamic>;
+              //     List<dynamic> slots = data['slots'] ?? [];
 List<dynamic> morningSlots = slots.where((s) => s['isMorning'] == true).toList();
     List<dynamic> eveningSlots = slots.where((s) => s['isMorning'] == false).toList();
                   if (slots.isEmpty) return const Center(child: Text('No slots available'));

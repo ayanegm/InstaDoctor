@@ -17,62 +17,72 @@ UserModel doctor;
       },
       child: Container(
         margin: EdgeInsets.only(right: 15),
-        padding: EdgeInsets.all(9),
+        
+        padding: const EdgeInsets.only(
+    top: 15,    // المساحة اللي طلبتيها فوق الاسم
+    bottom: 0,  // 👈 تقليل المساحة في نهاية الكارت للصفر لضغط المحتوى
+    left: 12,
+    right: 12,
+  ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12)
         ),
         
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          
-          children: [
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             
-            Column(
-               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              SizedBox(height: 10,),
-              Text(doctor.name,style: TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15)),
-              SizedBox(height: 1,),
-              Text(doctor.doctorModel!.Speciality,style: TextStyle(color: lightgreycolor),),
-              SizedBox(height: 8,),
-              Row(
-                children: [
-                  Container(
-                        height: 10,
-                        width: 10,child: Image.asset('assets/images/star.png'),),
-                        SizedBox(width: 4,),
-                        Container(
-                        height: 10,
-                        width: 10,child: Image.asset('assets/images/star.png'),),
-                        SizedBox(width: 4,),
-                        Container(
-                        height: 10,
-                        width: 10,child: Image.asset('assets/images/star.png'),),
-                        SizedBox(width: 4,),
-                        Container(
-                        height: 10,
-                        width: 10,child: Image.asset('assets/images/star.png'),),
-                        SizedBox(width: 4,),
-                ],
-              ),
+            children: [
               
-              SizedBox(height: 20,),
-              Text('Experience',style: TextStyle(color: lightgreycolor),),
-              Text('5 Years',style: TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15)),
-              SizedBox(height: 17,),
-              Text('Patients',style: TextStyle(color: lightgreycolor),),
-              Text('1.0k',style:  TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15),),
-            ],),
-            Container(
-              width: 75,
-              height: 160,
-              decoration: BoxDecoration(
-                color: Colors.grey
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  Text(doctor.name,style: TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15)),
+                  SizedBox(height: 1,),
+                  Text(doctor.doctorModel!.Speciality,style: TextStyle(color: lightgreycolor),),
+                  SizedBox(height: 8,),
+                  Row(
+                    children: [
+                      Container(
+                            height: 10,
+                            width: 10,child: Image.asset('assets/images/star.png'),),
+                            SizedBox(width: 4,),
+                            Container(
+                            height: 10,
+                            width: 10,child: Image.asset('assets/images/star.png'),),
+                            SizedBox(width: 4,),
+                            Container(
+                            height: 10,
+                            width: 10,child: Image.asset('assets/images/star.png'),),
+                            SizedBox(width: 4,),
+                            Container(
+                            height: 10,
+                            width: 10,child: Image.asset('assets/images/star.png'),),
+                            SizedBox(width: 4,),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 20,),
+                  Text('Experience',style: TextStyle(color: lightgreycolor),),
+                  Text('5 Years',style: TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15)),
+                  SizedBox(height: 17,),
+                  Text('Patients',style: TextStyle(color: lightgreycolor),),
+                  Text('1.0k',style:  TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15),),
+                ],),
               ),
-              child: Center(child: Icon(Icons.person)),
-            ),
-          ],
+              Container(
+                width: 75,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey
+                ),
+                child: Center(child: Icon(Icons.person)),
+              ),
+            ],
+          ),
         ),
         width: 260,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/const/constant.dart';
+import 'package:service_app/screens/doctor_list_screen.dart';
 import 'package:service_app/widgets/speciality_card.dart';
 
 class SelectSpecialityPage extends StatelessWidget {
@@ -8,7 +9,8 @@ class SelectSpecialityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Select Speciality',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),),
+      backgroundColor: backgroundColor,
+      appBar: AppBar(backgroundColor:backgroundColor ,title: Text('Select Speciality',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: GridView.builder(
@@ -22,7 +24,12 @@ class SelectSpecialityPage extends StatelessWidget {
             
           itemBuilder: (context, index) {
             final item=categories[index];
-            return SpecialityCard(name: item['name']!, imagePath: item['image']!);
+            return GestureDetector(onTap: () {
+              Navigator.push(context,MaterialPageRoute(builder: (context) {
+                return DoctorListScreen(speciality:item['name'] ,);
+              },));
+            },
+            child: SpecialityCard(name: item['name']!, imagePath: item['image']!));
           },itemCount:categories.length ,
             ),
       ));

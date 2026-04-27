@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:service_app/const/constant.dart';
-import 'package:service_app/helper/appointment_service.dart';
+import 'package:service_app/services/appointment_service.dart';
 import 'package:service_app/models/appointment_model.dart';
 
 class NextAppoitmentCard extends StatefulWidget {

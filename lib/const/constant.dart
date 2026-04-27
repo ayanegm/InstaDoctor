@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 const appColor=Color(0xFF577df2);
 const greycolor=Color.fromARGB(255, 70, 70, 70);
 const lightgreycolor=Color.fromARGB(255, 106, 106, 106);
-
+const backgroundColor=  Color(0xFFecf2fb);
 final List<Map<String, String>> categories = [
   {'name': 'Cardiology', 'image': 'assets/images/lifeline.png'},
   {'name': 'Dermatology', 'image': 'assets/images/skincare-routine.png'},

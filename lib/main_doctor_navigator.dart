@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:service_app/screens/doctor/doctor_appointment_page.dart';
 import 'package:service_app/screens/doctor/doctor_home_page.dart';
 import 'package:service_app/screens/doctor/doctor_personal_page.dart';
-import 'package:service_app/screens/home_page.dart';
 import 'package:service_app/widgets/doctor_widgets/doctor_bottom_navigator_bar.dart';
 
 class DoctorMainNavigator extends StatefulWidget {

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/const/constant.dart';
 import 'package:service_app/models/user_model.dart';
+import 'package:service_app/screens/doctor_list_screen.dart';
 import 'package:service_app/screens/select_speciality_page.dart';
 import 'package:service_app/widgets/available_doctor_container.dart';
 import 'package:service_app/widgets/bottom_navigator_bar.dart';
@@ -13,6 +14,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       bottomNavigationBar: CustomBottomNavigatorBar(selectedIndex: 0),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal:23.0,vertical: 23),
@@ -43,7 +45,14 @@ class HomePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 5),
                 itemBuilder: (context, index) {
                   final item=categories[index];
-                return IconContainer(text: item['name']!,imagePath: item['image']!);
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) {
+                      return DoctorListScreen(speciality: item['name']);
+                    },));
+                  },
+                  child: IconContainer(text: item['name']!,imagePath: item['image']!));
               },itemCount:categories.length ,),
             ),
             Row(

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/const/constant.dart';
 import 'package:service_app/screens/fake.dart';
-import 'package:service_app/screens/doctor/doctor_weekly_schedule_page.dart';
 import 'package:service_app/screens/home_page.dart';
 import 'package:service_app/screens/user_appointment_page.dart';
 
@@ -14,7 +13,7 @@ class CustomBottomNavigatorBar extends StatelessWidget {
     
     return  Container(
       color: Colors.white,
-        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 40),
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween, 
       children: [
@@ -33,13 +32,7 @@ class CustomBottomNavigatorBar extends StatelessWidget {
         },)
         );
         }),
-        _buildNavItem(Icons.favorite_border, 'Favorites', 2,
-        (){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-          return FakePage();
-        },)
-        );
-        }),
+     
        
         
       ]
@@ -48,7 +41,7 @@ class CustomBottomNavigatorBar extends StatelessWidget {
   }
 Widget _buildNavItem(IconData icon,String label,int index,VoidCallback onTap){
   bool isSelected =selectedIndex==index;
-  Color itemColor=isSelected?appColor:Colors.grey;
+  Color itemColor=isSelected?appColor:Colors.black;
   return GestureDetector(
     onTap: onTap,
     behavior: HitTestBehavior.opaque,

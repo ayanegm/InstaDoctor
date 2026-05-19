@@ -81,6 +81,7 @@ bool isLoading=false;
                       email: emailController.text,
                       password: passwordController.text
                     );
+                    await credential.user!.reload();
                     if(credential.user!.emailVerified){
                     var user=  await FirebaseFirestore.instance
                             .collection('users')

@@ -9,14 +9,13 @@ import 'package:service_app/models/appointment_model.dart';
 
 class DailySlotsCubit extends Cubit<SlotsState> {
   String id = FirebaseAuth.instance.currentUser!.uid;
-  StreamSubscription? _slotsSubscription; // لتخزين الاشتراك الحي
+  StreamSubscription? _slotsSubscription; 
 
   DailySlotsCubit() : super(SlotsInitial());
 
   void getDailySlots(String? customDateId) {
     emit(slotsLoadingState());
 
-    // إلغاء أي اشتراك قديم قبل البدء بواحد جديد (مهم عند تغيير التاريخ)
     _slotsSubscription?.cancel();
 
     String dateId = customDateId ?? DateFormat('yyyy-MM-dd').format(DateTime.now());

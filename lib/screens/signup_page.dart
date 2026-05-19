@@ -51,7 +51,7 @@ GlobalKey<FormState>formState=GlobalKey<FormState>();
             if(val==''){
                   return 'Can\'t to be empty';
             }
-          },),
+          },isPassword: true,),
           SizedBox(height: 30,),
           
           CustomRegisterButton(width: double.infinity,buttonName: 'Sign Up',onTap: ()async {

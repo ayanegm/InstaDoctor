@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/const/constant.dart';
 import 'package:service_app/models/user_model.dart';
@@ -13,6 +14,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+final String? username = FirebaseAuth.instance.currentUser?.displayName;
     return Scaffold(
       backgroundColor: backgroundColor,
       bottomNavigationBar: CustomBottomNavigatorBar(selectedIndex: 0),
@@ -21,7 +23,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Hi, Mohsen Jamli',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+            Text('Hi, ${username}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
             Text('How are you today',style:TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: Color.fromARGB(255, 125, 125, 125),)),
             SizedBox(height: 19,),
             Row(

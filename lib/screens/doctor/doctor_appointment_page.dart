@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:service_app/logic/cubit/daily_slots_cubit.dart';
 import 'package:service_app/logic/cubit/daily_slots_state.dart';
 import 'package:service_app/models/appointment_model.dart';
@@ -20,11 +21,20 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
     int _selectedTabIndex=0;
     DateTime today=DateTime.now();
     var doctorId=FirebaseAuth.instance.currentUser!.uid;
+@override
+void initState() {
+  super.initState();
+  _loadAppointmentsForSelectedDate();
+}
 
+void _loadAppointmentsForSelectedDate() {
+  String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+  context.read<DailySlotsCubit>().getDailySlots(formattedDate);
+}
 @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // bottomNavigationBar: DoctorBottomNavigatorBar(selectedIndex: 1,),
+      bottomNavigationBar: DoctorBottomNavigatorBar(selectedIndex: 1,),
       backgroundColor: Color(0xFFe8eef8),
       body:SafeArea(
         child: DefaultTabController(

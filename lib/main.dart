@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
    
     return BlocProvider(
-    // نقوم بإنشاء الـ Cubit مرة واحدة هنا
     create: (context) => DailySlotsCubit()..getDailySlots(null), 
     child: MaterialApp(
       title: 'Service App',

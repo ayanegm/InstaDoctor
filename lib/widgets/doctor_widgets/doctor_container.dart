@@ -58,7 +58,6 @@ class DoctorContainer extends StatelessWidget {
                   height: 10,
                   width: 10,child: Image.asset('assets/images/star.png'),),
                   SizedBox(width: 5,),
-             Text('4.9 (203 Reviews)',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12,color: Color.fromARGB(255, 75, 75, 75)),),
                 ],),
                 
              Row(children: [

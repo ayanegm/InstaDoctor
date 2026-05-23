@@ -4,40 +4,45 @@ import 'package:service_app/const/constant.dart';
 import 'package:service_app/screens/doctor/doctor_appointment_page.dart';
 import 'package:service_app/screens/doctor/doctor_home_page.dart';
 import 'package:service_app/screens/doctor/doctor_personal_page.dart';
-import 'package:service_app/screens/fake.dart';
+import 'package:service_app/screens/doctor/doctor_weekly_schedule_page.dart';
+import 'package:service_app/screens/user_appointment_page.dart';
 
 class DoctorBottomNavigatorBar extends StatelessWidget {
-   DoctorBottomNavigatorBar({super.key, required this.selectedIndex, required this.onTap,});
+   DoctorBottomNavigatorBar({super.key, required this.selectedIndex,});
   final int selectedIndex;
-  final Function(int) onTap;
   @override
   Widget build(BuildContext context) {
     
     return  Container(
-      height: 70,
-        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.white
-        ),
+      color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 40),
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween, 
       children: [
         _buildNavItem(Icons.home_outlined, 'Home', 0,
-        () => onTap(0)),
-        _buildNavItem(Icons.grid_view_rounded, 'Appointment', 1,
-       () => onTap(1)),
-        
-        
-        _buildNavItem(Icons.edit_calendar, 'Add slot', 2,
-        () => onTap(2)),
-        
-        // _buildNavItem(Icons.more_horiz, 'More', 3,
-        // (){
-        //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        //   return FakePage();
-        // },)
-        // );
-        // })
+        (){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          return DoctorHomePage();
+        },)
+        );
+        }
+        ),
+        _buildNavItem(Icons.calendar_month_outlined, 'Appointment', 1,
+        (){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          return DoctorAppointmentPage();
+        },)
+        );
+        }),
+        _buildNavItem(Icons.add_circle_outline, 'Add', 2,
+        (){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          return DoctorPersonalPage();
+        },)
+        );
+        }),
+      
+       
         
       ]
       ),
@@ -48,25 +53,21 @@ Widget _buildNavItem(IconData icon,String label,int index,VoidCallback onTap){
   Color itemColor=isSelected?appColor:Colors.black;
   return GestureDetector(
     onTap: onTap,
-    
     behavior: HitTestBehavior.opaque,
-    child: SizedBox(
-      width: 70,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        Icon(icon, color: itemColor, size: 26),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: itemColor,
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+      Icon(icon, color: itemColor, size: 26),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: itemColor,
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
-      ],),
-    ),
+          ),
+    ],),
   );
 }
   }

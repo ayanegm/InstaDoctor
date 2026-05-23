@@ -130,68 +130,6 @@ Future<void> bookAppoinment() async {
     setState(() => isLoading = false);
   }
 }
-//   Future<void> bookAppoinment() async {
-//     if (selectedSlot == null) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(content: Text('please select a time slot first!')));
-//       return;
-//     }
-// if (selectedSlot!['status'] == 'booked') {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('This slot is no longer available.')));
-//     return;
-//   }
-//     setState(() {
-//       isLoading = true;
-//     });
-
-//     try {
-//       var patientId = FirebaseAuth.instance.currentUser!.uid;
-//       String dateId = DateFormat('yyyy-MM-dd').format(selectedDate);
-      
-//       DateTime appointmentTime = (selectedSlot!['time'] as Timestamp).toDate();
-
-//       AppointmentModel newAppointment = AppointmentModel(
-//           id: DateTime.now().microsecondsSinceEpoch.toString(),
-//           doctorName: widget.doctor.name,
-//           time: appointmentTime,
-//           date: selectedDate,
-//           status: 'booked',
-//           isMorning:selectedSlot!['isMorning']??true ,
-//           patientId: patientId);
-
-//       await FirebaseFirestore.instance.collection('users').doc(patientId).update({
-//         'appointmentList': FieldValue.arrayUnion([newAppointment.toMap()])
-//       });
-
-//       DocumentReference dayRef = FirebaseFirestore.instance
-//           .collection('users')
-//           .doc(widget.doctor.uid)
-//           .collection('daily_slots')
-//           .doc(dateId);
-
-//       var dayDoc = await dayRef.get();
-//       if (dayDoc.exists) {
-//         List<dynamic> slots = List.from(dayDoc.get('slots'));
-//         for (var i = 0; i < slots.length; i++) {
-//           if (slots[i]['time'] == selectedSlot!['time']) {
-//             slots[i]['status'] = 'booked';
-//             slots[i]['patientId'] = patientId;
-//             break;
-//           }
-//         }
-//         await dayRef.update({'slots': slots});
-//       }
-
-//       ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(content: Text('appointment is added to your list successfully')));
-//     } catch (e) {
-//       print('Error when adding the appointment: $e');
-//     }
-//     setState(() {
-//       isLoading = false;
-//     });
-//   }
 
   @override
   Widget build(BuildContext context) {
@@ -251,24 +189,7 @@ Future<void> bookAppoinment() async {
     var data = snapshot.data!.data() as Map<String, dynamic>;
     // The rest of your UI logic (slots.where, GridView.builder) remains the same
     List<dynamic> slots = data['slots'] ?? [];
-              // StreamBuilder<DocumentSnapshot>(
-              //   stream: FirebaseFirestore.instance
-              //       .collection('users')
-              //       .doc(widget.doctor.uid)
-              //       .collection('daily_slots')
-              //       .doc(dateId)
-              //       .snapshots(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.hasError) return const Text('Something went wrong');
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return const Center(child: CircularProgressIndicator());
-              //     }
-              //     if (!snapshot.hasData || !snapshot.data!.exists) {
-              //       return const Center(child: Text('No slots available for this day'));
-              //     }
-
-              //     var data = snapshot.data!.data() as Map<String, dynamic>;
-              //     List<dynamic> slots = data['slots'] ?? [];
+            
 List<dynamic> morningSlots = slots.where((s) => s['isMorning'] == true).toList();
     List<dynamic> eveningSlots = slots.where((s) => s['isMorning'] == false).toList();
                   if (slots.isEmpty) return const Center(child: Text('No slots available'));

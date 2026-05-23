@@ -26,15 +26,7 @@ class _DoctorMainNavigatorState extends State<DoctorMainNavigator> {
         index: _currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: DoctorBottomNavigatorBar(
-        
-        selectedIndex: _currentIndex,
-        onTap: (index){
-          setState(() {
-            _currentIndex=index;
-          });
-        },
-      ),
+      
     );
   }
 }

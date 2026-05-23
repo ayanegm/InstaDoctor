@@ -28,8 +28,6 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
   @override
   void initState(){
     super.initState();
-    // String dateId=DateFormat('yyyy-MM-dd').format(DateTime.now());
-    // dailyStream=FirebaseFirestore.instance.collection('users').doc(userId).collection('daily_slots').doc(dateId).snapshots();
     getUserData();
   }
   void getUserData() async {
@@ -42,7 +40,7 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
 }
   Widget build(BuildContext context) {
     return Scaffold(
-      // bottomNavigationBar: DoctorBottomNavigatorBar(selectedIndex: 0,),
+      bottomNavigationBar: DoctorBottomNavigatorBar(selectedIndex: 0),
       backgroundColor: Color(0xFFecf2fb),
         body: BlocBuilder<DailySlotsCubit,SlotsState>(builder: (context, state) {
           if(state is slotsLoadingState)return Center(child: CircularProgressIndicator(),);
@@ -66,7 +64,7 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
               children: [
                 Row(
                   children: [
-                    Text('Welcome back, Dr.${userModel!.name}',style: TextStyle(fontWeight: FontWeight.w800,fontSize: 16),),
+                    Text('Welcome back, Dr.${userModel?.name ?? '...'}',style: TextStyle(fontWeight: FontWeight.w800,fontSize: 16),),
                   ],
                 ),
                 SizedBox(height: 50,),

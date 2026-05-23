@@ -9,7 +9,6 @@ import 'package:service_app/models/user_model.dart';
 import 'package:service_app/screens/book_appointment_page.dart';
 import 'package:service_app/screens/calender_screen.dart';
 import 'package:service_app/screens/doctor/doctor_home_page.dart';
-import 'package:service_app/screens/fake.dart';
 import 'package:service_app/widgets/custom_register_button.dart';
 import 'package:service_app/widgets/custom_text_field.dart';
 import 'package:service_app/widgets/time_booking_appointment_container.dart';
@@ -196,7 +195,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context) {
               },));
                 }
                 catch (e) {
-      if (mounted) Navigator.pop(context); // إغلاق الـ Loading عند الخطأ
+      if (mounted) Navigator.pop(context); 
       print("Error: $e");
     }
               
@@ -204,13 +203,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context) {
             buttonName: 'Save',
             width: 120,),
             SizedBox(height: 30,),
-            // CustomRegisterButton(onTap: ()async {
-            //   Navigator.push(context, MaterialPageRoute(builder: (context) {
-            //     return BookAppointmentPage();
-            //   },));
-            // },
-            // buttonName: 'schedule',
-            // width: 120,),
+           
               ],),
          );
     

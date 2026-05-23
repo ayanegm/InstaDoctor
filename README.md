@@ -1,3 +1,4 @@
+
 # InstaDoctor
 [![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/ayanegm/InstaDoctor)
 
@@ -11,6 +12,7 @@ InstaDoctor is a comprehensive doctor appointment booking application built with
 - **Doctor Profiles:** View detailed doctor profiles including specialization, bio, years of experience, and location.
 - **Appointment Booking:** Easily book appointments by selecting a preferred date and available time slot from the doctor's real-time schedule.
 - **Appointment Management:** View a list of upcoming and past appointments with options to manage them.
+<img width="608" height="906" alt="userSide" src="https://github.com/user-attachments/assets/b6569f23-3c91-4e7b-8b83-8617cab94f8e" />
 
 ### For Doctors
 - **Profile Management:** A dedicated flow for doctors to register and complete their professional profiles with details like specialty, experience, and bio.

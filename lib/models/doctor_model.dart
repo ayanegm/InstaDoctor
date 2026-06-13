@@ -5,7 +5,7 @@ class DoctorModel {
   // final String image;
   final String location;
   final double rating;
-  final int phoneNumber;
+  final String phoneNumber;
   final int reviewCount;
   final String bio;
   final int yearsExperience;

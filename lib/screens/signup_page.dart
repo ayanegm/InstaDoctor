@@ -19,79 +19,84 @@ GlobalKey<FormState>formState=GlobalKey<FormState>();
   Widget build(BuildContext context) {
      return Scaffold(
       backgroundColor: Color(0xFFe8eef8),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 13.0,vertical: 13),
-        child: Form(
-          key: formState,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            Text('Sign Up',style: TextStyle(fontSize: 33,fontWeight: FontWeight.bold,),),
-            SizedBox(height: 9,),
-            Row(
-              children: [
-                Text('Already have an account?   '),
-                Text('Sign In!',style: TextStyle(color: appColor,fontWeight: FontWeight.bold,),),
-              ],
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 500),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 13.0,vertical: 53),
+            child: Form(
+              key: formState,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                Text('Sign Up',style: TextStyle(fontSize: 33,fontWeight: FontWeight.bold,),),
+                SizedBox(height: 9,),
+                Row(
+                  children: [
+                    Text('Already have an account?   '),
+                    Text('Sign In!',style: TextStyle(color: appColor,fontWeight: FontWeight.bold,),),
+                  ],
+                ),
+              SizedBox(height: 30,),
+              CustomTextField(field_title: 'Username*', controller: usernameController, validator: (val) {
+                if(val==''){
+                      return 'Can\'t to be empty';
+                }
+              },),
+              SizedBox(height: 15,),
+              CustomTextField(field_title: 'Email*', controller: emailController, validator: (val) {
+                if(val==''){
+                      return 'Can\'t to be empty';
+                }
+              },),
+              SizedBox(height: 15,),
+              CustomTextField(field_title: 'Password*', controller: passwordController, validator: (val) {
+                if(val==''){
+                      return 'Can\'t to be empty';
+                }
+              },isPassword: true,),
+              SizedBox(height: 30,),
+              
+              CustomRegisterButton(width: double.infinity,buttonName: 'Sign Up',onTap: ()async {
+                if(formState.currentState!.validate()){
+                  try{
+                      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: emailController.text.trim(),
+                        password: passwordController.text,
+                      );
+                      await credential.user!.updateDisplayName(usernameController.text);
+                      print("User Created: ${credential.user!.uid}");            
+          
+                     await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+          
+                CustomSnackBar.show(context,'Check your email or spam folder to verify your account.');
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SigninPage();
+                  },));
+                  }
+                  on FirebaseAuthException catch (e) {
+                  if (e.code == 'weak-password') {
+                    CustomSnackBar.show(context,'The password provided is too weak.');
+                  } else if (e.code == 'email-already-in-use') {
+                   CustomSnackBar.show(context,'The account already exists for that email.');
+                  }
+                  else{
+                    CustomSnackBar.show(context,'Wrong email or password');
+                  }
+                } catch (e) {
+                  CustomSnackBar.show(context,e.toString());
+                }
+                }
+                else{
+                  CustomSnackBar.show(context,'this not valid');
+                }
+                }
+                
+              
+              )
+              ],)
             ),
-          SizedBox(height: 30,),
-          CustomTextField(field_title: 'Username*', controller: usernameController, validator: (val) {
-            if(val==''){
-                  return 'Can\'t to be empty';
-            }
-          },),
-          SizedBox(height: 15,),
-          CustomTextField(field_title: 'Email*', controller: emailController, validator: (val) {
-            if(val==''){
-                  return 'Can\'t to be empty';
-            }
-          },),
-          SizedBox(height: 15,),
-          CustomTextField(field_title: 'Password*', controller: passwordController, validator: (val) {
-            if(val==''){
-                  return 'Can\'t to be empty';
-            }
-          },isPassword: true,),
-          SizedBox(height: 30,),
-          
-          CustomRegisterButton(width: double.infinity,buttonName: 'Sign Up',onTap: ()async {
-            if(formState.currentState!.validate()){
-              try{
-                  final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: emailController.text.trim(),
-                    password: passwordController.text,
-                  );
-                  await credential.user!.updateDisplayName(usernameController.text);
-                  print("User Created: ${credential.user!.uid}");            
-
-                 await FirebaseAuth.instance.currentUser!.sendEmailVerification();
-
-            CustomSnackBar.show(context,'Please verify your email then sign in.');
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return SigninPage();
-              },));
-              }
-              on FirebaseAuthException catch (e) {
-              if (e.code == 'weak-password') {
-                CustomSnackBar.show(context,'The password provided is too weak.');
-              } else if (e.code == 'email-already-in-use') {
-               CustomSnackBar.show(context,'The account already exists for that email.');
-              }
-              else{
-                CustomSnackBar.show(context,'Wrong email or password');
-              }
-            } catch (e) {
-              CustomSnackBar.show(context,e.toString());
-            }
-            }
-            else{
-              CustomSnackBar.show(context,'this not valid');
-            }
-            }
-            
-          
-          )
-          ],)
+          ),
         ),
       ),
     );

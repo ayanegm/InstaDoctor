@@ -68,7 +68,7 @@ CustomTextField(field_title: 'Location', maxLines: 3,controller: location, valid
             }
           },),
           CustomRegisterButton(buttonName: 'Save',onTap: () async{
-            DoctorModel doctorModel=DoctorModel(Speciality:selectedSpecialty! , location: location.toString(),yearsExperience: int.tryParse(experienceYears.text)??0, bio: bio.text.toString(),phoneNumber: int.tryParse(experienceYears.text)??0);
+            DoctorModel doctorModel=DoctorModel(Speciality:selectedSpecialty! , location: location.toString(),yearsExperience: int.tryParse(experienceYears.text)??0, bio: bio.text.toString(),phoneNumber: phoneNumber.text);
             widget.userModel.doctorModel=doctorModel;
             await FirebaseFirestore.instance.collection('users').doc(widget.userModel.uid).set(widget.userModel.toMap());
             Navigator.push(context, MaterialPageRoute(builder: (context) {

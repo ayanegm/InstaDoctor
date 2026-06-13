@@ -199,10 +199,10 @@ List<dynamic> morningSlots = slots.where((s) => s['isMorning'] == true).toList()
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: slots.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
+                      crossAxisCount: 6,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 2.2,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 2.8,
                     ),
                     itemBuilder: (context, index) {
   var slot = slots[index];

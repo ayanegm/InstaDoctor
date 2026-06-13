@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/const/constant.dart';
 import 'package:service_app/models/user_model.dart';
+import 'package:service_app/screens/book_appointment_page.dart';
 import 'package:service_app/screens/doctor/doctor_profile_page.dart';
 
 class AvailableDoctorContainer extends StatelessWidget {
@@ -12,7 +13,7 @@ UserModel doctor;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return DoctorProfilePage(doctor: doctor,);
+          return BookAppointmentPage(doctor: doctor,);
         },));
       },
       child: Container(
@@ -67,11 +68,22 @@ UserModel doctor;
                   
                   SizedBox(height: 20,),
                   Text('Experience',style: TextStyle(color: lightgreycolor),),
-                  Text('5 Years',style: TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15)),
+                  Text('${doctor.doctorModel!.yearsExperience} Years',style: TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15)),
                   SizedBox(height: 17,),
-                  Text('Patients',style: TextStyle(color: lightgreycolor),),
-                  Text('1.0k',style:  TextStyle(color: greycolor,fontWeight: FontWeight.bold,fontSize: 15),),
-                ],),
+                  Text('Location',style: TextStyle(color: lightgreycolor),),
+Row(
+  children: [
+    Icon(Icons.location_on, size: 16, color: appColor), // أيقونة الموقع
+    SizedBox(width: 4),
+    Expanded(
+      child: Text(
+        doctor.doctorModel!.location,
+        style: TextStyle(color: lightgreycolor, fontSize: 13),
+        overflow: TextOverflow.ellipsis, // لمنع خروج النص عن حدود الكارت
+      ),
+    ),
+  ],
+),                ],),
               ),
               Container(
                 width: 75,

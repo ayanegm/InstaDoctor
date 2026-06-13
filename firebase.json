@@ -1,1 +1,39 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"doctor-appointment-app-ad8f8","appId":"1:491348943166:android:f984330c45dee4f6b18c6f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"doctor-appointment-app-ad8f8","configurations":{"android":"1:491348943166:android:f984330c45dee4f6b18c6f","ios":"1:491348943166:ios:48feb5e014f28b2bb18c6f","macos":"1:491348943166:ios:48feb5e014f28b2bb18c6f","web":"1:491348943166:web:500aa080071a3fadb18c6f","windows":"1:491348943166:web:6de7d0879c95c15fb18c6f"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "doctor-appointment-app-ad8f8",
+          "appId": "1:491348943166:android:f984330c45dee4f6b18c6f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "doctor-appointment-app-ad8f8",
+          "configurations": {
+            "android": "1:491348943166:android:f984330c45dee4f6b18c6f",
+            "ios": "1:491348943166:ios:48feb5e014f28b2bb18c6f",
+            "macos": "1:491348943166:ios:48feb5e014f28b2bb18c6f",
+            "web": "1:491348943166:web:500aa080071a3fadb18c6f",
+            "windows": "1:491348943166:web:6de7d0879c95c15fb18c6f"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

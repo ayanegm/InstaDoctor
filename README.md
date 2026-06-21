@@ -1,6 +1,5 @@
 
 # InstaDoctor
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/ayanegm/InstaDoctor)
 
 InstaDoctor is a comprehensive doctor appointment booking application built with Flutter and Firebase. It provides a seamless experience for both patients seeking medical consultations and doctors managing their schedules. The app features distinct user interfaces and functionalities tailored to each role.
 
